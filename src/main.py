@@ -1,44 +1,39 @@
-from fastapi import FastAPI, File, UploadFile
-from subprocess import run
-import shutil
-from typing import List
 import os
+import shutil
+import socket
+from subprocess import run
+from typing import List
+
+from dotenv import find_dotenv, load_dotenv
+from fastapi import FastAPI, File, Form, UploadFile
+
+load_dotenv(find_dotenv())
 
 app = FastAPI()
+
+UPLOADS_DIR = os.getenv("UPLOADS_DIR")
+PC_NAME = socket.gethostname()
 
 
 @app.post("/upload/")
 async def upload_file(
+    targets: List[str] = Form(...),
     file: UploadFile = File(...),
-    targets: List[str] = [],
-    target_path: str = os.getenv("DEFAULT_PATH")
+    target_path: str = Form(...)
 ):
-    with open(file.filename, "wb") as buffer:
+    file_path = os.path.join("C:"+ UPLOADS_DIR, file.filename)
+    if not targets:
+        return {"targets": "No targets provided"}
+    with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     for target in targets:
-        run([
-            "PsExec.exe", f"\\\\{target}",
+        command = [
+            "psexec", f"\\\\{target}",
             "-u", os.getenv("USER"), "-p", os.getenv("PASSWORD"),
-            "-c", "-f", file.filename,
-            f"{target_path}"
-        ])
+            "-i", "xcopy", "\\\\" + PC_NAME + UPLOADS_DIR + file.filename,
+            f"{target_path}", "/Y"     
+        ]
+        run(command)
 
-    return {"filename": file.filename}
-
-
-@app.post("/download/")
-async def download_file(
-    download_link: str,
-    targets: List[str] = [],
-    target_path: str = os.getenv("DEFAULT_PATH")
-):
-    for target in targets:
-        run([
-            "PsExec.exe", f"\\\\{target}",
-            "-u", os.getenv("USER"), "-p", os.getenv("PASSWORD"),
-            "-c", "-f", download_link,
-            f"{target_path}"
-        ])
-
-    return {"link": download_link}
+    return {"message": file.filename + " uploaded to " + str(targets)}
