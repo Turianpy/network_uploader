@@ -31,7 +31,8 @@ target_path: str
 
 POSTMAN REQUEST EXAMPLE:
 
-![image](https://github.com/Turianpy/network_uploader/assets/111991884/9f7db948-bb70-4954-a35b-e5290dd4c4a1)
+![image](https://github.com/Turianpy/network_uploader/assets/111991884/079b86c7-1c33-4152-ab6f-67dd0c048a03)
+
 
 Response:
 
