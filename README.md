@@ -36,9 +36,10 @@ Response:
 {
   "message": "file.ext uploaded to [targets list]"
 }
+```
 
 GET `yourhost/download/?file_name=yourfilename` Will download the file
 
-default docs endpoint: `http://localhost:8000/docs'
+default docs endpoint: http://localhost:8000/docs
 
 
