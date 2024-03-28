@@ -40,7 +40,8 @@ async def download_file(file_name: str):
 
 @app.post("/upload/")
 async def upload(
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
+    filename: Optional[str] = Form(None),
     targets: List[str] = Form(None),
     target_path: Optional[str] = Form(os.getenv("UPLOADS_DIR"))
 ):
@@ -50,10 +51,15 @@ async def upload(
     all specified target machines
     with psexec and curl
     """
-    await upload_file_to_server(file)
+    if file:
+        await upload_file_to_server(file)
+        filename = file.filename
+    if filename:
+        file_path = os.path.join(os.getenv("UPLOADS_DIR"), filename)
+        if not os.path.isfile(file_path):
+            return {"message": "File not found on server"}
     if not targets:
         return {"message": "No targets specified, uploaded  to server only"}
-    filename = file.filename
     command = [
         "psexec",
         f"\\\\{','.join(targets)}",
