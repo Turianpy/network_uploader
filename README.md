@@ -18,10 +18,10 @@ UPLOADS_DIR=\Temp\
 ```
 3. Run
 ```shell
-uvicorn src.main:app
+uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 4. Test
-You can now make POST requests with form-data in the following format:
+You can now make POST requests to /upload/ endpoint with form-data in the following format:
 file: File
 targets: List[str]
 target_path: str
@@ -36,3 +36,9 @@ Response:
 {
   "message": "file.ext uploaded to [targets list]"
 }
+
+GET `yourhost/download/?file_name=yourfilename` Will download the file
+
+default docs endpoint: `http://localhost:8000/docs'
+
+
