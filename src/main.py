@@ -12,16 +12,12 @@ load_dotenv(find_dotenv())
 
 app = FastAPI()
 
-UPLOADS_DIR = os.getenv("UPLOADS_DIR")
-PC_NAME = socket.gethostname()
-project_path = os.path.dirname(os.path.abspath(__file__))
-
 
 @app.post("/upload_to_server/")
 async def upload_file_to_server(
     file: UploadFile = File(...)
 ):
-    file_path = os.path.join("C:"+ UPLOADS_DIR, file.filename)
+    file_path = os.path.join(os.getenv("UPLOADS_DIR"), file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     
@@ -30,7 +26,7 @@ async def upload_file_to_server(
 
 @app.get("/download/")
 async def download_file(file_name: str):
-    file_path = os.path.join("C:"+ UPLOADS_DIR, file_name)
+    file_path = os.path.join(os.getenv("UPLOADS_DIR"), file_name)
     print(file_path)
     return FileResponse(
         path=file_path,
