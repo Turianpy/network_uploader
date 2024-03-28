@@ -14,7 +14,10 @@ USER=Someuser
 
 PASSWORD=Asd7ASdm813Zcb
 
-UPLOADS_DIR=\Temp\
+UPLOADS_DIR=C:\Temp\
+
+SERVER_URL=http://172.11.11.1:8000
+
 ```
 3. Run
 ```shell
@@ -38,7 +41,7 @@ Response:
 }
 ```
 
-GET `yourhost/download/?file_name=yourfilename` Will download the file
+GET `SERVER_URL/download/?file_name=yourfilename` Will download the file
 
 default docs endpoint: http://localhost:8000/docs
 

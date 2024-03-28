@@ -13,7 +13,6 @@ load_dotenv(find_dotenv())
 app = FastAPI()
 
 
-@app.post("/upload_to_server/")
 async def upload_file_to_server(
     file: UploadFile = File(...)
 ):
@@ -42,15 +41,18 @@ async def download_file(file_name: str):
 @app.post("/upload/")
 async def upload(
     file: UploadFile = File(...),
-    targets: List[str] = Form(...),
+    targets: List[str] = Form(None),
     target_path: Optional[str] = Form(os.getenv("UPLOADS_DIR"))
 ):
     """
-    Uploads file to server and then
-    download it to all target machines
+    Uploads file to server
+    then download it to
+    all specified target machines
     with psexec and curl
     """
     await upload_file_to_server(file)
+    if not targets:
+        return {"message": "No targets specified, uploaded  to server only"}
     filename = file.filename
     command = [
         "psexec",
@@ -62,7 +64,6 @@ async def upload(
         "-o", filename,
         f"{os.getenv('SERVER_URL')}/download/?file_name={filename}"
     ]
-    print(command)
     process = await asyncio.create_subprocess_exec(*command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     await process.wait()
     return {"message": f"{filename} uploaded to {','.join(targets)}"}
