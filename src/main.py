@@ -1,7 +1,6 @@
+import asyncio
 import os
 import shutil
-import socket
-import asyncio
 from typing import List, Optional
 
 from dotenv import find_dotenv, load_dotenv
@@ -47,8 +46,7 @@ async def upload(
 ):
     """
     Uploads file to server
-    then download it to
-    all specified target machines
+    then downloads it to all specified targets
     with psexec and curl
     """
     if file:
