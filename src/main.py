@@ -17,6 +17,9 @@ app = FastAPI()
 async def upload_file_to_server(
     file: UploadFile = File(...)
 ):
+    """
+    Uploads file to server
+    """
     file_path = os.path.join(os.getenv("UPLOADS_DIR"), file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -26,8 +29,10 @@ async def upload_file_to_server(
 
 @app.get("/download/")
 async def download_file(file_name: str):
+    """
+    Downloads file from server to client
+    """
     file_path = os.path.join(os.getenv("UPLOADS_DIR"), file_name)
-    print(file_path)
     return FileResponse(
         path=file_path,
         headers={"Content-Disposition": f"attachment; filename={file_name}"}
@@ -40,6 +45,11 @@ async def upload(
     targets: List[str] = Form(...),
     target_path: Optional[str] = Form(os.getenv("UPLOADS_DIR"))
 ):
+    """
+    Uploads file to server and then
+    download it to all target machines
+    with psexec and curl
+    """
     await upload_file_to_server(file)
     filename = file.filename
     command = [
